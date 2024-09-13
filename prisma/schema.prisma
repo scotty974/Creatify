@@ -19,8 +19,8 @@ model User {
   password     String
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
-  accessToken  String?
-  refreshToken String?
+  accessToken  String?  @db.LongText
+  refreshToken String?  @db.LongText
   role         Role     @default(CREATOR)
   profil       Profil?
   Media        Media[]
