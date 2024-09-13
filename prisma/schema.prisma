@@ -9,6 +9,57 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  accessToken  String
+  refreshToken String
+  role         Role     @default(CREATOR)
+  profil       Profil?
+  Media        Media[]
+}
+
+model Profil {
+  id         String   @id @default(cuid())
+  avatar     String
+  banner     String
+  username   String
+  bio        String?
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  social     Social[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Social {
+  id       String @id @default(cuid())
+  name     String
+  link     String
+  profilId String
+  Profil   Profil @relation(fields: [profilId], references: [id])
+}
+
+model Media {
+  id          String   @id @default(cuid())
+  url         String
+  description String?
+  title       String
+  isFeatured  Boolean  @default(false)
+  priority    Int      @default(0)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  created_at  DateTime @default(now())
+}
+
+enum Role {
+  CREATOR
+  CLIENT
 }
