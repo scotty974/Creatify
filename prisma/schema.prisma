@@ -24,6 +24,7 @@ model User {
   role         Role     @default(CREATOR)
   profil       Profil?
   Media        Media[]
+  social     Social[]
 }
 
 model Profil {
@@ -34,7 +35,6 @@ model Profil {
   bio        String?
   userId     String   @unique
   user       User     @relation(fields: [userId], references: [id])
-  social     Social[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -43,8 +43,8 @@ model Social {
   id       String @id @default(cuid())
   name     String
   link     String
-  profilId String
-  Profil   Profil @relation(fields: [profilId], references: [id])
+  userId String
+  user   User @relation(fields: [userId], references: [id])
 }
 
 model Media {

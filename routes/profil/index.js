@@ -2,6 +2,7 @@ import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { expressjwt } from "express-jwt";
 import profileValidation from "./validation.js";
+import socialValidation from "./socialValidation.js";
 import upload from "./multerConfig.js";
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -39,7 +40,7 @@ router.post(
     try {
       const avatarPath = req.files.avatar ? req.files.avatar[0].path : null;
       const bannerPath = req.files.banner ? req.files.banner[0].path : null;
-       await prisma.profil.create({
+      await prisma.profil.create({
         data: {
           username: data.username,
           bio: data.bio,
@@ -48,7 +49,7 @@ router.post(
           userId: req.auth.id,
         },
       });
-     
+
       return res
         .status(200)
         .json({ message: "Votre profil est bien enregistrer. " });
@@ -126,8 +127,41 @@ router.get("/api/profil", auth, async (req, res) => {
     where: {
       userId: userId,
     },
+    select: {
+      avatar: true,
+      banner: true,
+      bio: true,
+      username: true,
+      created_at: true,
+      user: {
+        select: {
+          social: true,
+        },
+      },
+    },
   });
   if (!profil) return res.status(403).json({ message: "Profile introuvable" });
   res.json(profil);
+});
+
+router.post("/api/social", auth, async (req, res) => {
+  let data;
+  try {
+    data = socialValidation.parse(req.body);
+  } catch (error) {
+    return res.status(400).json({ message: "Une erreur est survenue. " });
+  }
+  try {
+    await prisma.social.create({
+      data: {
+        name: data.name,
+        link: data.link,
+        userId: req.auth.id,
+      },
+    });
+    return res.status(200).json({message : "Ajout d'un lien social."})
+  } catch (error) {
+    return res.status(400).json({ message: "Une erreur est survenue." });
+  }
 });
 export default router;
