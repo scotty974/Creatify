@@ -164,4 +164,55 @@ router.post("/api/social", auth, async (req, res) => {
     return res.status(400).json({ message: "Une erreur est survenue." });
   }
 });
+router.delete("/api/delete-user", auth, async (req, res) => {
+  try {
+    // Récupérer l'ID de l'utilisateur connecté à partir du token d'authentification
+    const userId = req.auth.id;
+
+    // Vérifier si l'utilisateur existe
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(403).json({ message: "Utilisateur non trouvé." });
+    }
+
+    // Supprimer les données associées à l'utilisateur
+    await prisma.profil.deleteMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    await prisma.media.deleteMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    await prisma.social.deleteMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    // Enfin, supprimer l'utilisateur lui-même
+    await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+
+    return res.status(200).json({ message: "Utilisateur et ses données supprimés avec succès." });
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'utilisateur :", error);
+    return res.status(500).json({
+      message: "Une erreur est survenue lors de la suppression de l'utilisateur.",
+    });
+  }
+});
+
 export default router;
