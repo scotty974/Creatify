@@ -133,9 +133,13 @@ router.get("/api/profil", auth, async (req, res) => {
       bio: true,
       username: true,
       created_at: true,
+      tags : true,
+      rate : true,  
       user: {
         select: {
           social: true,
+          clientRequests : true,
+          creatorProjects : true
         },
       },
     },
