@@ -19,6 +19,15 @@ router.post("/api/project-requests", auth, async (req, res) => {
   try {
     const clientUser = req.auth.role;
     if (clientUser === "CLIENT") {
+      const user = await prisma.user.findFirst({
+        where: {
+          id: data.creatorId,
+        },
+      });
+      if (user)
+        return res.json({
+          message: "Vous ne pouvez pas envoyer la demande à cette personne !",
+        });
       await prisma.projetRequest.create({
         data: {
           clientId: req.auth.id,
