@@ -133,13 +133,10 @@ router.get("/api/profil", auth, async (req, res) => {
       bio: true,
       username: true,
       created_at: true,
-      tags : true,
-      rate : true,  
+      tags: true,
       user: {
         select: {
           social: true,
-          clientRequests : true,
-          creatorProjects : true
         },
       },
     },
@@ -163,7 +160,7 @@ router.post("/api/social", auth, async (req, res) => {
         userId: req.auth.id,
       },
     });
-    return res.status(200).json({message : "Ajout d'un lien social."})
+    return res.status(200).json({ message: "Ajout d'un lien social." });
   } catch (error) {
     return res.status(400).json({ message: "Une erreur est survenue." });
   }
@@ -210,11 +207,14 @@ router.delete("/api/delete-user", auth, async (req, res) => {
       },
     });
 
-    return res.status(200).json({ message: "Utilisateur et ses données supprimés avec succès." });
+    return res
+      .status(200)
+      .json({ message: "Utilisateur et ses données supprimés avec succès." });
   } catch (error) {
     console.error("Erreur lors de la suppression de l'utilisateur :", error);
     return res.status(500).json({
-      message: "Une erreur est survenue lors de la suppression de l'utilisateur.",
+      message:
+        "Une erreur est survenue lors de la suppression de l'utilisateur.",
     });
   }
 });

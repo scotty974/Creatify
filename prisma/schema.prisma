@@ -25,12 +25,6 @@ model User {
   profil       Profil?
   Media        Media[]
   social       Social[]
-  rating       Rating[]
-
-  clientRequests  ProjetRequest[] @relation("ClientRequest")
-  creatorProjects ProjetRequest[] @relation("CreatorResponse")
-  creator         Project[]       @relation("Creator")
-  client          Project[]       @relation("Client")
 }
 
 model Profil {
@@ -43,7 +37,6 @@ model Profil {
   user       User     @relation(fields: [userId], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  rate       Rating[]
   tags       Tags[]
 }
 
@@ -65,19 +58,6 @@ model Media {
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   created_at  DateTime @default(now())
-  Project     Project? @relation(fields: [projectId], references: [id])
-  projectId   String?
-}
-
-model Rating {
-  id         String   @id @default(cuid())
-  score      Int
-  comment    String?
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  profilId   String
-  profil     Profil   @relation(fields: [profilId], references: [id])
-  created_at DateTime @default(now())
 }
 
 model Tags {
@@ -85,32 +65,6 @@ model Tags {
   name     String
   profilId String
   profil   Profil @relation(fields: [profilId], references: [id])
-}
-
-model ProjetRequest {
-  id          String   @id @default(cuid())
-  description String
-  status      String   @default("open")
-  clientId    String
-  client      User     @relation("ClientRequest", fields: [clientId], references: [id])
-  creatorId   String?
-  creator     User?    @relation("CreatorResponse", fields: [creatorId], references: [id])
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-}
-
-model Project {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  status      String   @default("en attente") // pending, in progress, completed, etc.
-  creatorId   String
-  creator     User     @relation("Creator", fields: [creatorId], references: [id])
-  clientId    String?
-  client      User?    @relation("Client", fields: [clientId], references: [id])
-  media       Media[]
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
 }
 
 enum Role {
